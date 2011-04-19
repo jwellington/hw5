@@ -76,5 +76,7 @@ int main(int argc, char* argv[]) {
 	char* message = "Message";
 	write(sockfd, (void*)message, len);
 	
+	close(sockfd);
+	
 	return 0;
 }
