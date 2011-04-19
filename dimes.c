@@ -213,8 +213,3 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-void error(char * str)
-{
-	printf("%s\n", str);
-	exit(1);
-}
