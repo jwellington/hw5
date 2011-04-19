@@ -14,7 +14,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
+#include <netinet/in.h>
 /*********
  * Simple usage instructions
  *********/
@@ -142,29 +142,79 @@ int main(int argc, char* argv[]) {
 	// Declarations for getopt
 	extern int optind;
 	extern char* optarg;
-	int ch;
-	char* format = "f:h";
+	int sock, length;
+	//socklen_t clilen;
+	unsigned int clilen;
+	struct sockaddr_in server;
+	struct sockaddr_in client;
 	
 	// Variables you'll want to use
 	char* filename = "Dimefile";
-
-	// Part 2.2.1: Use getopt code to take input appropriately.
-	while((ch = getopt(argc, argv, format)) != -1) {
-		switch(ch) {
-			case 'f':
-				filename = strdup(optarg);
-				break;
-			case 'h':
-				dime_usage(argv[0]);
-				break;
-		}
+	rule_node_t* list = parse_file(filename);
+	
+	if(argc != 2)
+	{
+		error("Usage error");
 	}
-	argc -= optind;
-	argv += optind;
+
 
 	// parse the given file, then execute targets
-	rule_node_t* list = parse_file(filename);
-	execute_targets(argc, argv, list);
+	sock=socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) 
+		error("Opening socket");
+	length = sizeof(server);
+	bzero(&server,length);
+	server.sin_family=AF_INET;
+	server.sin_addr.s_addr=INADDR_ANY;
+	server.sin_port=htons(atoi(argv[1]));
+	if (bind(sock,(struct sockaddr *)&server,length)<0) 
+	   error("binding");
+	clilen = sizeof(struct sockaddr_in);
+	
+	listen(sock, 100);
+	
+	while(1)
+	{
+		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);\
+		printf("Accepted");
+		char id_buffer[4];
+		char payload_buffer[4];
+		ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
+		if(bytes_read < 4)
+			error("Too small of header");
+		bytes_read = read(new_socket, (void *) &payload_buffer, 4);
+		if(bytes_read < 4)
+			error("Too small of header");
+			
+		uint32_t id = htonl(*((uint32_t *)id_buffer));
+		uint32_t payload = htonl(*((uint32_t *)payload_buffer));
+		
+		printf("Header is: %d --- %d", id,  payload);
+		if(id == 100)
+		{
+			//Handshake Response
+		}
+		else if(id == 102)
+		{
+			//Execute Target
+		}
+		else if(id == 105)
+		{
+			//Error happened
+		}
+		
+		
+	}
+	
+	
+	
+	//execute_targets(argc, argv, list);
 	rule_node_free(list);
 	return 0;
+}
+
+void error(char * str)
+{
+	printf("%s\n", str);
+	exit(1);
 }
