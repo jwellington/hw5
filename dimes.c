@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 	while(1)
 	{
 		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);\
-		printf("Accepted");
+		printf("Accepted\n");
 		char id_buffer[4];
 		char payload_buffer[4];
 		ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
@@ -186,22 +186,30 @@ int main(int argc, char* argv[]) {
 		if(bytes_read < 4)
 			error("Too small of header");
 			
-		uint32_t id = htonl(*((uint32_t *)id_buffer));
-		uint32_t payload = htonl(*((uint32_t *)payload_buffer));
+		uint32_t id = ntohl(*((uint32_t *)id_buffer));
+		uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
 		
-		printf("Header is: %d --- %d", id,  payload);
+		printf("Header is: %d --- %d\n", id,  payload);
 		if(id == 100)
 		{
+			printf("100\n");
+			char message_buffer[payload];
+			bytes_read = read(new_socket, (void *) &message_buffer, payload);
+			printf("Message: %c\n", message_buffer[0]);
 			//Handshake Response
 		}
 		else if(id == 102)
 		{
+			char message_buffer[payload];
+			bytes_read = read(new_socket, (void *) &message_buffer, payload);
+			printf("Message: %c", message_buffer[0]);
 			//Execute Target
 		}
 		else if(id == 105)
 		{
 			//Error happened
 		}
+		printf("Comparison over\n");
 		
 		
 	}
