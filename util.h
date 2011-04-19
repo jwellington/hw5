@@ -66,4 +66,7 @@ void pid_node_free(pid_node_t*);
 char* trim(char*);
 char** get_argvec(char*);
 
+//prints the error and exits
+void error(char*);
+
 #endif

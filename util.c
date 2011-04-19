@@ -176,3 +176,9 @@ void pid_node_free(pid_node_t* node) {
 	if(node->next != NULL) { pid_node_free(node->next); }
 	free(node);
 }
+
+void error(char* message)
+{
+    printf("%s\n", message);
+    exit(1);
+}
