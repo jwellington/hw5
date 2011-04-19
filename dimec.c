@@ -69,10 +69,10 @@ int main(int argc, char* argv[]) {
 	{
 	    error("Failed to connect");
 	}
-	int header = 100;
-	int len = 7;
-	write(sockfd, (void*)&header, sizeof(int));
-	write(sockfd, (void*)&len, sizeof(int));
+	uint32_t header = htonl(100);
+	uint32_t len = htonl(7);
+	write(sockfd, (void*)&header, sizeof(uint32_t));
+	write(sockfd, (void*)&len, sizeof(uint32_t));
 	char* message = "Message";
 	write(sockfd, (void*)message, len);
 	
