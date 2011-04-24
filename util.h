@@ -6,7 +6,15 @@
  *********************/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
 
 // the following ifdef/def pair prevents us from having problems if 
 // we've included util.h in multiple places... it's a handy trick
@@ -68,5 +76,16 @@ char** get_argvec(char*);
 
 //prints the error and exits
 void error(char*);
+
+size_t send_message(int, int, char*);
+
+typedef struct dime_message {
+    uint32_t id;
+    uint32_t len;
+    char* message;
+} DIME_MESSAGE;
+
+DIME_MESSAGE* receive_message(int);
+void message_free(DIME_MESSAGE*);
 
 #endif

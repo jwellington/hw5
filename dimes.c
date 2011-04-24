@@ -104,7 +104,7 @@ void fake_exec(rule_t* rule) {
 	str_node_t* sptr;
 	for(sptr = rule->commandlines; sptr != NULL; sptr = sptr->next) {
 		printf("%s\n",sptr->str);
-		usleep(500000);
+		usleep(50000);
 	}
 }
 
@@ -157,7 +157,6 @@ int main(int argc, char* argv[]) {
 		error("Usage error");
 	}
 
-
 	// parse the given file, then execute targets
 	sock=socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) 
@@ -168,50 +167,70 @@ int main(int argc, char* argv[]) {
 	server.sin_addr.s_addr=INADDR_ANY;
 	server.sin_port=htons(atoi(argv[1]));
 	if (bind(sock,(struct sockaddr *)&server,length)<0) 
-	   error("binding");
+	    error("Failed to bind socket");
 	clilen = sizeof(struct sockaddr_in);
 	
 	listen(sock, 100);
 	
 	while(1)
 	{
-		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);\
+		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);
 		printf("Accepted\n");
-		char id_buffer[4];
-		char payload_buffer[4];
-		ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
-		if(bytes_read < 4)
-			error("Too small of header");
-		bytes_read = read(new_socket, (void *) &payload_buffer, 4);
-		if(bytes_read < 4)
-			error("Too small of header");
+		
+		int done = 0;
+		
+	    while (!done)
+	    {
+		    /*char id_buffer[4];
+		    ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
+		    if(bytes_read < 4)
+			    error("Error reading message ID");
+		    uint32_t id = ntohl(*((uint32_t *)id_buffer));
 			
-		uint32_t id = ntohl(*((uint32_t *)id_buffer));
-		uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
+		    char payload_buffer[4];
+		    bytes_read = read(new_socket, (void *) &payload_buffer, 4);
+		    if(bytes_read < 4)
+			    error("Error reading message length");
+		    uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
 		
-		printf("Header is: %d --- %d\n", id,  payload);
-		if(id == 100)
-		{
-			printf("100\n");
-			char message_buffer[payload];
-			bytes_read = read(new_socket, (void *) &message_buffer, payload);
-			printf("Message: %c\n", message_buffer[0]);
-			//Handshake Response
-		}
-		else if(id == 102)
-		{
-			char message_buffer[payload];
-			bytes_read = read(new_socket, (void *) &message_buffer, payload);
-			printf("Message: %c", message_buffer[0]);
-			//Execute Target
-		}
-		else if(id == 105)
-		{
-			//Error happened
-		}
-		printf("Comparison over\n");
+		    char message_buffer[payload];
+            bytes_read = read(new_socket, (void *) &message_buffer, payload);*/
+        
+            DIME_MESSAGE* message = receive_message(new_socket);
+            uint32_t id = message->id;
+            uint32_t payload = message->len;
+            char* message_buffer = message->message;
+            message_free(message);
 		
-		
+		    printf("Header is: %d --- %d\n", id,  payload);
+		    if(id == 100) //Handshake received
+		    {
+			    printf("100\n");
+			    printf("Handshake received: %s\n", message_buffer);
+			    send_message(new_socket, 101, "");
+			    //Handshake Response
+		    }
+		    else if(id == 102)
+		    {
+			    printf("Target received: %s\n", message_buffer);
+			    int i;
+			    for (i = 0 ; i < 5; i++)
+			    {
+			        send_message(new_socket, 103, "Command totally executed!\n");
+			    }
+			    send_message(new_socket, 104, "");
+			    //Execute Target
+		    }
+		    else if(id == 105)
+		    {
+			    error(message_buffer);
+		    }
+		    else
+		    {
+		        printf("Unrecognized message ID %d\n", id);
+		    }
+		}
+		close(new_socket);
 	}
 	
 	

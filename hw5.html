@@ -1,0 +1,1119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.4" />
+<title>CSci 4061 Homework 5</title>
+<style type="text/css">
+/* Sans-serif font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+div#toctitle,
+span#author, span#revnumber, span#revdate, span#revremark,
+div#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+/* Serif font. */
+div.sectionbody {
+  font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+/* Monospace font. */
+tt {
+  font-size: inherit;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  font-size: inherit;
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+}
+
+div#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #777777;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toc {
+  margin-bottom: 2.5em;
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+}
+
+}
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>CSci 4061 Homework 5</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p>Due April 29, 2011, 11:59pm<br />
+100 points<br />
+Version 1.0, Released April 15<br /></p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The purpose of this lab is to learn how to do socket programming, and extend your
+<tt>dime</tt> program, so that we can perform <tt>dime</tt> operation on a remote host.</p></div>
+<div class="sect2">
+<h3 id="_1_1_rules">1.1 Rules</h3>
+<div class="paragraph"><p>You may work on this assignment individually or in pairs. Please work in
+pairs, there are so many of you. Ideally, you&#8217;ll want to work with the same
+team from previous assignments, but you are allowed to change your group if you prefer.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_the_assignment">2. The Assignment</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_1_setup">2.1 Setup</h3>
+<div class="paragraph"><p>Download and untar this <a href="hw5.tar.gz">modified hw1 solution</a>, which contains <tt>dimes.c</tt>
+(source code for <tt>dime server</tt>) and <tt>dimec.c</tt> (source code for <tt>dime client</tt>).</p></div>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>dimes.c</tt> has all the logic for the <tt>dime</tt> utility. It is basically the same thing
+as the base code (the one with <tt>fake_exec</tt>) we provided you for hw4. This is where
+your dime server&#8217;s code should go.
+</p>
+</li>
+<li>
+<p>
+<tt>dimec.c</tt> is where your dime client&#8217;s code should go, at this point, there is nothing in
+there other than a few <tt>include</tt> statements.
+</p>
+</li>
+</ul></div>
+</div></div>
+<div class="paragraph"><p>I highly recommend that you start with the given solution, so that all the parsing logic
+is intact and the Makefile makes the proper executables. (Named <tt>dimes</tt> for <tt>dime server</tt>
+and <tt>dimec</tt> for <tt>dime client</tt>)</p></div>
+</div>
+<div class="sect2">
+<h3 id="_2_2_your_tasks">2.2 Your Tasks</h3>
+<div class="paragraph"><p>Overall, your task will be to implement a dime server and dime client. Based on the
+arguments provided on the command line when executing dime client, the client will
+establish a TCP connection with the dime server. After that, your client will issue a
+request by specifying the target(s) to execute. The execution of target(s) will be performed remotely on the dime server and the outputs of the execution will be sent back to the client. These output should be displayed on the client&#8217;s terminal.</p></div>
+<div class="sect3">
+<h4 id="_2_2_1_dime_client">2.2.1 Dime Client</h4>
+<div class="paragraph"><p>The dime client is the interface between the users and the dime service. All the parameters required to issue a dime service request are specified on the command line. The dime client will terminate after issuing the service request and receiving all the related response. Your dime client should close all the socket descriptor before terminating.</p></div>
+<div class="sect4">
+<h5 id="_2_2_1_1_input_from_command_line">2.2.1.1 Input from command line</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>Server address</tt>: This must be present on the command line, it specifies the address of the dime server.
+</p>
+</li>
+<li>
+<p>
+<tt>Port number</tt>: This must be present on the command line, it specifies the port number at which the dime server is waiting for connection.
+</p>
+</li>
+<li>
+<p>
+<tt>Target(s)</tt>: Like your HW1, the user is allowed to specify what target(s) to execute. If no target is specified on the command line, then the first target (including its dependencies) in the Dimefile is executed. Your client should also support multiple targets.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_2_2_1_2_communication_protocol">2.2.1.2 Communication protocol</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+Step 1: Establish connection with sever.
+</p>
+</li>
+<li>
+<p>
+Step 2: Send handshake message to server.
+</p>
+</li>
+<li>
+<p>
+Step 3: Wait for handshake response from server.
+</p>
+</li>
+<li>
+<p>
+Step 4: Issue request to execute a target.
+</p>
+</li>
+<li>
+<p>
+Step 5: Wait for response messages.
+</p>
+</li>
+<li>
+<p>
+Step 6: You could get multiple response messages from executing one target (including its dependencies), therefore repeat step 5 until a end of response message is received.
+</p>
+</li>
+<li>
+<p>
+Step 7: If there are more targets to execute, then repeat step 4 to step 6. Terminate if no more target to execute.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_2_2_1_3_output_to_terminal">2.2.1.3 Output to terminal</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+Upon establishing connection with the server, print a simple notification with the server&#8217;s address and port number. Example: <tt>connected to cs1260-02.cselabs.umn.edu at port 4455</tt>.
+</p>
+</li>
+<li>
+<p>
+Print a simple notification after issuing the request to execute a target. Example: <tt>Issued request to execute: rulea</tt>.
+</p>
+</li>
+<li>
+<p>
+All the response messages from the server.
+</p>
+</li>
+<li>
+<p>
+Any error messages.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_2_2_dime_server">2.2.2 Dime Server</h4>
+<div class="paragraph"><p>The dime server should be single-threaded and would only serve one client at a time. After finished serving the current client, your dime server should wait for the next client. The server should run in an infinite loop and terminate when <em>ctrl-c</em> is pressed. In case the server is running in background, it can also terminate using <tt>kill</tt> command.</p></div>
+<div class="sect4">
+<h5 id="_2_2_2_1_input_from_command_line">2.2.2.1 Input from command line</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>Port number</tt>: This must be present on the command line, in fact, it should be the only input on the command line. It specifies the port number at which the dime server would be waiting for incoming connection.
+</p>
+</li>
+<li>
+<p>
+Notice that, in this assignment, you do not need to support the -f option. This means your dime server is always going to operate on the file named <tt>Dimefile</tt>.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_2_2_2_2_communication_protocol">2.2.2.2 Communication protocol</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+Step 1: Listen for incoming connection at the specified port.
+</p>
+</li>
+<li>
+<p>
+Step 2: Establish new connection.
+</p>
+</li>
+<li>
+<p>
+Step 3: Wait for handshake message from client.
+</p>
+</li>
+<li>
+<p>
+Step 4: Send handshake repose to client.
+</p>
+</li>
+<li>
+<p>
+Step 5: Wait for request to execute a target.
+</p>
+</li>
+<li>
+<p>
+Step 6: "Execute" the specified target and all its dependencies and send response messages to client. A response message should contain the result from executing a command. In this case, since we are doing <tt>fake_exec</tt>, a response message would simply be the command you are performing fake_exec on. Notice that  <tt>fake_exec</tt> currently prints to the <tt>stdout</tt>, you will need to make modification so that the command is sent to the client instead. If the specified target is not found in the Dimefile, then response message that says <tt>"Target rulep not found"</tt> (assume that rulep is the target you supposed to execute) should be sent.
+</p>
+</li>
+<li>
+<p>
+Step 7: Send end of response message to client
+</p>
+</li>
+<li>
+<p>
+Step 8: Repeat step 5 to step 7 until the client closes connection.
+</p>
+</li>
+<li>
+<p>
+Step 9: Go back to step 1 if connection closed.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect4">
+<h5 id="_2_2_2_3_output_to_terminal">2.2.2.3 Output to terminal</h5>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+Upon establishing connection with the client, print a simple notification with the client&#8217;s address and port number. Example: <tt>Incoming connection from cs1260-13.cselabs.umn.edu at port 2233</tt>.
+</p>
+</li>
+<li>
+<p>
+Print a simple notification when request to execute a target is received. Example: <tt>Request to execute rulea from cs1260-13.cselabs.umn.edu</tt>.
+</p>
+</li>
+<li>
+<p>
+Print a simple notification when a client closed the connection. Example: <tt>Client from cs1260-13.cselabs.umn.edu disconnected</tt>.
+</p>
+</li>
+<li>
+<p>
+Any error messages.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_2_3_messages">2.2.3 Messages</h4>
+<div class="paragraph"><p>A message contains three fields:</p></div>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>Message ID</tt>: a 32-bit integer that specifies the type of message, for example: <tt>100 means it is a handshake message</tt>.
+</p>
+</li>
+<li>
+<p>
+<tt>Length of payload</tt>: a 32-bit integer that specifies the size of the payload in bytes.
+</p>
+</li>
+<li>
+<p>
+<tt>Payload</tt>: the actual content of your message, it could be empty in some cases
+</p>
+</li>
+<li>
+<p>
+Figure 1 shows you a message that requests the server to execute <em>target1</em>:
+</p>
+</li>
+</ul></div>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="msg_target1.png" alt="message_diagram" />
+</div>
+<div class="title">Figure 1. Message for executing target1</div>
+</div>
+<div class="paragraph"><p>The following table shows a complete list of message type:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="34%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Message ID </th>
+<th align="left" valign="top">Message type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">100</p></td>
+<td align="left" valign="top"><p class="table">Handshake</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">101</p></td>
+<td align="left" valign="top"><p class="table">Handshake response</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">102</p></td>
+<td align="left" valign="top"><p class="table">Execute target</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">103</p></td>
+<td align="left" valign="top"><p class="table">Response message</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">104</p></td>
+<td align="left" valign="top"><p class="table">End of response</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">105</p></td>
+<td align="left" valign="top"><p class="table">Error message</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Detailed explanation of each message type is provided below:</p></div>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Handshake</strong>: A <tt>handshake</tt> message should not have anything in the payload, so set length of payload to <tt>0</tt>.
+</p>
+</li>
+<li>
+<p>
+<strong>Handshake response</strong>: A <tt>handshake response</tt> message should not have anything in the payload, so set length of payload to <tt>0</tt>.
+</p>
+</li>
+<li>
+<p>
+<strong>Execute target</strong>: In case no target is specified on command line when executing the dime client, the <tt>Execute target</tt> message should have length of payload set to <tt>0</tt> and your dime server should interpret this as executing the first target in the Dimefile.
+</p>
+</li>
+<li>
+<p>
+<strong>Response message</strong>: Executing a <tt>commandline</tt> (As defined in HW1, a <tt>commandline</tt> is a single command to execute in a Dimefile) would result in exactly <strong>one</strong> <tt>response</tt> message. This means executing one target (including its dependencies) could result in multiple <tt>response</tt> messages. For example, executing <tt>target1</tt> (including its dependencies) would result in 11 (2 + 2 + 6 + 1) <tt>response</tt> messages, because there are 2 <tt>commandlines</tt> for <tt>rulea</tt>, another 2 for <tt>ruleb</tt>, 6 for <tt>rulec</tt> and 1 for <tt>target1</tt>.
+</p>
+</li>
+<li>
+<p>
+<strong>End of response</strong>: The <tt>end of response</tt> message is sent after the whole execution of a given target (including its dependencies) is finished and all the response messages have been sent. The <tt>end of response</tt> message should not have anything in the payload, so set length of payload to <tt>0</tt>.
+</p>
+</li>
+<li>
+<p>
+<strong>Error message</strong>: In case an unrecognized or malformed message is received, the connection should be terminated and an error message should be sent over to the other side of the network connection. The payload should be printed out to the terminal on the receiver of such message.
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_2_2_4_hints">2.2.4 Hints</h4>
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+You can test both your client and server on the same machine by using <tt>localhost</tt>. For example, <tt>./dimec localhost 5566 rulea</tt>. However, you should make sure that your code would eventually run across two machines.
+</p>
+</li>
+<li>
+<p>
+When testing your code, use the last 5 digits of your student ID as the port number. This helps avoid problems like two groups testing their codes on the same machine with the same port number.
+</p>
+</li>
+<li>
+<p>
+Use network byte ordering conversions appropriately for integers
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_2_2_5_extra_credit">2.2.5 Extra Credit</h4>
+<div class="paragraph"><p>Implement a multi-threaded dime server that is capable of serving multiple clients at a time and it should be able to accept new connection while serving other clients' requests. To achieve this, you will use your main thread to accept new connection. Each time a new connection is established, spawn a worker thread to serve that particular client. Such a worker thread should terminate when its client closes the connection.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_3_an_example">2.3 An Example</h3>
+<div class="paragraph"><p>Here is a concrete example, assume the following <tt>Dimefile</tt> is used:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>target1: rulea ruleb rulec {
+        t1 line1
+}
+
+rulea: {
+        one line
+        two lines
+}
+
+ruleb: {
+        red line
+        blue line
+}
+
+rulec: {
+        this one
+        has
+        a
+        bunch
+        of
+        lines
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>Start the server (on cs1260-02.cselabs.umn.edu) by executing the following command:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>./dimes 5566</tt></pre>
+</div></div>
+<div class="paragraph"><p>Here is a sample run for the client:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>./dimec cs1260-02.cselabs.umn.edu 5566 ruleb rulec ruled
+connected to cs1260-02.cselabs.umn.edu at port 5566
+Issued request to execute: ruleb
+red line
+blue line
+Issued request to execute: rulec
+this one
+has
+a
+bunch
+of
+lines
+Issued request to execute: ruled
+Target ruled not found</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_grading">3. Grading</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_3_1_submission_instructions_and_deliverables">3.1 Submission Instructions and Deliverables</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+All of your code, <tt>.c</tt> and <tt>.h</tt> files. Your code should compile and run on CSELabs
+Linux machines.
+</p>
+</li>
+<li>
+<p>
+<tt>Makefile</tt> that works and would create two binaries named <strong>exactly</strong> <tt>dimes</tt> (dime server) and <tt>dimec</tt> (dime client). Your code should all compile, just by us typing <tt>make</tt>.
+If we can&#8217;t compile your code by typing <tt>make</tt>, then you&#8217;re definitely going to lose points.
+</p>
+</li>
+<li>
+<p>
+A file named <strong>exactly</strong> README with the following info:
+</p>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Names, IDs and CSELabs account names of both people in the group
+</p>
+</li>
+<li>
+<p>
+Any additional information about your program that you feel we should know
+</p>
+</li>
+</ol></div>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_3_2_rubric">3.2 Rubric</h3>
+<div class="tableblock">
+<table rules="none"
+width="50%"
+frame="void"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Following instructions and README</p></td>
+<td align="left" valign="top"><p class="table">5 points</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Documentation and style</p></td>
+<td align="left" valign="top"><p class="table">15 points</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Functionality</p></td>
+<td align="left" valign="top"><p class="table">80 points</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Extra credit</p></td>
+<td align="left" valign="top"><p class="table">10 points</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>For testing, we will have a sample <tt>Dimefile</tt> that we will expect
+your code to execute properly. Please feel free to come up with your
+own tests and share them with other students in the class.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_changelog">4. Changelog</h2>
+<div class="sectionbody">
+<div class="openblock">
+<div class="content">
+<div class="ulist"><ul>
+<li>
+<p>
+1.0 April 15 Original release
+</p>
+</li>
+</ul></div>
+</div></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2011-04-15 13:51:33 CDT
+</div>
+</div>
+</body>
+</html>

@@ -6,9 +6,6 @@
  ************************/
 
 #include "util.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 
 /***************
  * These functions are just some handy file functions.
@@ -47,7 +44,7 @@ str_node_t* str_node_create(char* str) {
  * Recursive function for freeing a str_node
  *************/
 void str_node_free(str_node_t* node) {
-	free(node->str);
+	if (node->str != NULL) { free(node->str); }
 	if(node->next != NULL) { str_node_free(node->next); }
 	free(node);
 }
@@ -181,4 +178,54 @@ void error(char* message)
 {
     printf("%s\n", message);
     exit(1);
+}
+
+size_t send_message(int fd, int id, char* message)
+{
+    uint32_t header = htonl(id);
+    size_t message_len = strlen(message) + 1;
+    uint32_t len = htonl(message_len);
+    
+    size_t bytes_written = 0;
+    printf("Sending (%d %d), (%d %d), (%s)\n", id, header, message_len, len, message);
+    bytes_written += write(fd, (void*)&header, sizeof(uint32_t));
+    bytes_written += write(fd, (void*)&len, sizeof(uint32_t));
+    bytes_written += write(fd, (void*)message, message_len);
+    
+    return bytes_written;
+}
+
+DIME_MESSAGE* receive_message(int sockfd)
+{
+    char id_buffer[4];
+	ssize_t bytes_read = read(sockfd, (void *) &id_buffer, 4);
+	if(bytes_read < 4)
+		error("Error reading message ID");
+	uint32_t id = ntohl(*((uint32_t *)id_buffer));
+		
+	char payload_buffer[4];
+	bytes_read = read(sockfd, (void *) &payload_buffer, 4);
+	if(bytes_read < 4)
+		error("Error reading message length");
+	uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
+	
+	char* message_buffer = (char*)malloc(sizeof(char) * payload);
+	printf("Allocated %p\n", message_buffer);
+    bytes_read = read(sockfd, (void *)message_buffer, payload);
+    
+    DIME_MESSAGE* message = (DIME_MESSAGE*)malloc(sizeof(DIME_MESSAGE));
+    message->id = id;
+    message->len = payload;
+    message->message = message_buffer;
+    
+    printf("Received %d, %d, %s\n", id, payload, message->message);
+    
+    return message;
+}
+
+void message_free(DIME_MESSAGE* message)
+{
+	printf("Freeing %p\n", message->message);
+    free(message->message);
+    free(message);
 }
