@@ -15,6 +15,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 int main(int argc, char* argv[]) {
 
@@ -34,13 +35,16 @@ int main(int argc, char* argv[]) {
     {
         str_node_t* cur_target = (str_node_t*)malloc(sizeof(str_node_t));
         cur_target->next = NULL;
-        cur_target->str = argv[3];
+        char* tar_str = (char*)malloc(strlen(argv[3]) + 1);
+        strcpy(tar_str, argv[3]);
+        cur_target->str = tar_str;
         targets = cur_target;
         int i;
         for (i = 4; i < argc; i++)
         {
-            cur_target->next = (str_node_t*)malloc(sizeof(str_node_t));
-            cur_target = cur_target->next;
+            str_node_t* new_target = (str_node_t*)malloc(sizeof(str_node_t));
+            cur_target->next = new_target;
+            cur_target = new_target;
             char* tar_str = (char*)malloc(strlen(argv[i]) + 1);
             strcpy(tar_str, argv[i]);
             cur_target->str = tar_str;
@@ -91,13 +95,14 @@ int main(int argc, char* argv[]) {
           hp->h_length);
 	
 	err = connect(sockfd, (const struct sockaddr *)&serv_addr, sizeof(struct sockaddr_in));
+	char* serv_ip = inet_ntoa(serv_addr.sin_addr);
 	if (err < 0)
 	{
 	    error("Failed to connect");
 	}
 	else
     {
-        printf("Connected to %s at port %d.\n", server_addr, port_num);
+        printf("Connected to %s (%s) at port %d.\n", server_addr, serv_ip, port_num);
     }
 	size_t bytes_sent = send_message(sockfd, 100, "");
 	
@@ -124,14 +129,15 @@ int main(int argc, char* argv[]) {
         DIME_MESSAGE* message = receive_message(sockfd);
         uint32_t id = message->id;
         uint32_t payload = message->len;
-        char* message_buffer = message->message;
+        char message_buffer[505];
+        strcpy(message_buffer, message->message);
         message_free(message);
         
-		printf("Header is: %d --- %d\n", id,  payload);
+		//printf("Header is: %d --- %d\n", id,  payload);
         if (id == 101) //Handshake response
         {
             char* target_str = cur_target->str;
-            printf("Sending target %s\n", target_str);
+            printf("Issued request to execute %s\n", target_str);
             send_message(sockfd, 102, target_str);
             cur_target = cur_target->next;
         }
@@ -139,21 +145,21 @@ int main(int argc, char* argv[]) {
         {
             while (id != 104)
             {
-                char* response = message_buffer;
-                printf("Received response %s\n", response);
+                printf("%s\n", message_buffer);
                 message = receive_message(sockfd);
                 id = message->id;
+                strcpy(message_buffer, message->message);
                 message_free(message);
             }
             if (cur_target == NULL)
             {
-                printf("Done\n");
+                //printf("Done\n");
                 done = 1;
             }
             else
             {
                 char* target_str = cur_target->str;
-                printf("Sending target %s\n", target_str);
+                printf("Issued request to execute %s\n", target_str);
                 send_message(sockfd, 102, target_str);
                 cur_target = cur_target->next;
             }

@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 /*********
  * Simple usage instructions
  *********/
@@ -81,29 +82,30 @@ rule_node_t* parse_file(char* filename) {
 /**************
  * Exec targets with recursive calls
  **************/
-void exec_target_rec(rule_t* rule, rule_node_t* list) {
+void exec_target_rec(rule_t* rule, rule_node_t* list, int sockfd) {
 	str_node_t* sptr;
 	rule_node_t* rptr;
 	for(sptr = rule->deps; sptr != NULL; sptr = sptr->next) {
 		// for each dependency, see if there's a rule, then exec that rule
 		for(rptr = list; rptr != NULL; rptr = rptr->next) {
 			if(strcmp(sptr->str, rptr->rule->target) == 0) {
-				exec_target_rec(rptr->rule, list);
+				exec_target_rec(rptr->rule, list, sockfd);
 			}
 		}
 	}
 
-	fake_exec(rule);
+	fake_exec(rule, sockfd);
 }
 
 /***********
  * Function for 'fake execing' for HW4.
  * Don't exec, just print commandlines and wait 1 sec per commandline
  ***********/
-void fake_exec(rule_t* rule) {
+void fake_exec(rule_t* rule, int sockfd) {
 	str_node_t* sptr;
 	for(sptr = rule->commandlines; sptr != NULL; sptr = sptr->next) {
-		printf("%s\n",sptr->str);
+		send_message(sockfd, 103, sptr->str);
+		printf("%s\n", sptr->str);
 		usleep(50000);
 	}
 }
@@ -111,7 +113,7 @@ void fake_exec(rule_t* rule) {
 /*********
  * Given a target list and the list of rules, execute the targets.
  *********/
-void execute_targets(int targetc, char* targetv[], rule_node_t* list) {
+void execute_targets(int targetc, char* targetv[], rule_node_t* list, int sockfd) {
 	rule_node_t* ptr = list;
 	int i;
 	if(targetc == 0) {
@@ -120,13 +122,13 @@ void execute_targets(int targetc, char* targetv[], rule_node_t* list) {
 		if(ptr == NULL) {
 			fprintf(stderr, "Error, no targets in dimefile.\n");
 		} else {
-			exec_target_rec(ptr->rule, list);
+			exec_target_rec(ptr->rule, list, sockfd);
 		}
 	} else {
 		for(i = 0; i < targetc; i++) {
 			for(ptr = list; ptr != NULL; ptr = ptr->next) {
 				if(strcmp(targetv[i], ptr->rule->target) == 0) {
-					exec_target_rec(ptr->rule, list);
+					exec_target_rec(ptr->rule, list, sockfd);
 					break;
 				}
 			}
@@ -175,11 +177,11 @@ int main(int argc, char* argv[]) {
 	while(1)
 	{
 		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);
-		printf("Accepted\n");
+		int port_num = ntohs(client.sin_port);
+		char* client_ip = inet_ntoa(client.sin_addr);
+		printf("Incoming connection from %s at port %d\n", client_ip, port_num);
 		
-		int done = 0;
-		
-	    while (!done)
+	    while (1)
 	    {
 		    /*char id_buffer[4];
 		    ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
@@ -197,43 +199,53 @@ int main(int argc, char* argv[]) {
             bytes_read = read(new_socket, (void *) &message_buffer, payload);*/
         
             DIME_MESSAGE* message = receive_message(new_socket);
+            if (message == NULL) //Client disconnected
+            {
+                break;
+            }
             uint32_t id = message->id;
             uint32_t payload = message->len;
-            char* message_buffer = message->message;
+            char message_buffer[strlen(message->message) + 1];
+            strcpy(message_buffer, message->message);
             message_free(message);
 		
-		    printf("Header is: %d --- %d\n", id,  payload);
+		    //printf("Header is: %d --- %d\n", id,  payload);
 		    if(id == 100) //Handshake received
 		    {
-			    printf("100\n");
-			    printf("Handshake received: %s\n", message_buffer);
+			    //printf("100\n");
+			    //printf("Handshake received: %s\n", message_buffer);
 			    send_message(new_socket, 101, "");
 			    //Handshake Response
 		    }
 		    else if(id == 102)
 		    {
-			    printf("Target received: %s\n", message_buffer);
-			    int i;
-			    for (i = 0 ; i < 5; i++)
-			    {
-			        send_message(new_socket, 103, "Command totally executed!\n");
-			    }
+			    printf("Received request to execute %s from %s\n", message_buffer, client_ip);
+		        //FIXME: Actually execute targets here
+		        if (strlen(message_buffer) > 0)
+		        {
+		            char* tar_list[0];
+		            tar_list[0] = message_buffer;
+		            execute_targets(1, tar_list, list, new_socket);
+		        }
+		        else
+		        {
+		            execute_targets(0, NULL, list, new_socket);
+		        }
 			    send_message(new_socket, 104, "");
 			    //Execute Target
 		    }
 		    else if(id == 105)
 		    {
-			    error(message_buffer);
+			    printf("%s\n", message_buffer);
 		    }
 		    else
 		    {
 		        printf("Unrecognized message ID %d\n", id);
 		    }
 		}
+		printf("%s disconnected.\n", client_ip);
 		close(new_socket);
 	}
-	
-	
 	
 	//execute_targets(argc, argv, list);
 	rule_node_free(list);
