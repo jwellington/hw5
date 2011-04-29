@@ -105,8 +105,8 @@ void fake_exec(rule_t* rule, int sockfd) {
 	str_node_t* sptr;
 	for(sptr = rule->commandlines; sptr != NULL; sptr = sptr->next) {
 		send_message(sockfd, 103, sptr->str);
-		printf("%s\n", sptr->str);
-		usleep(50000);
+		//printf("%s\n", sptr->str);
+		usleep(500000);
 	}
 }
 
