@@ -133,8 +133,10 @@ void execute_targets(int targetc, char* targetv[], rule_node_t* list, int sockfd
 				}
 			}
 			if(ptr == NULL) {
-				fprintf(stderr, "Error, target '%s' not found.\n",targetv[i]);
-				exit(1);
+			    char errbuf[strlen("Error, target '' not found.\n") + strlen(targetv[i]) + 1];
+			    sprintf(errbuf, "Error, target '%s' not found.\n",targetv[i]);
+				send_message(sockfd, 105, errbuf);
+				printf("%s", errbuf);
 			}
 		}
 	}
@@ -182,22 +184,7 @@ int main(int argc, char* argv[]) {
 		printf("Incoming connection from %s at port %d\n", client_ip, port_num);
 		
 	    while (1)
-	    {
-		    /*char id_buffer[4];
-		    ssize_t bytes_read = read(new_socket, (void *) &id_buffer, 4);
-		    if(bytes_read < 4)
-			    error("Error reading message ID");
-		    uint32_t id = ntohl(*((uint32_t *)id_buffer));
-			
-		    char payload_buffer[4];
-		    bytes_read = read(new_socket, (void *) &payload_buffer, 4);
-		    if(bytes_read < 4)
-			    error("Error reading message length");
-		    uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
-		
-		    char message_buffer[payload];
-            bytes_read = read(new_socket, (void *) &message_buffer, payload);*/
-        
+	    {        
             DIME_MESSAGE* message = receive_message(new_socket);
             if (message == NULL) //Client disconnected
             {
@@ -219,7 +206,7 @@ int main(int argc, char* argv[]) {
 		    }
 		    else if(id == 102)
 		    {
-			    printf("Received request to execute %s from %s\n", message_buffer, client_ip);
+			    printf("Received request to execute: %s from %s\n", message_buffer, client_ip);
 		        //FIXME: Actually execute targets here
 		        if (strlen(message_buffer) > 0)
 		        {
@@ -240,7 +227,7 @@ int main(int argc, char* argv[]) {
 		    }
 		    else
 		    {
-		        printf("Unrecognized message ID %d\n", id);
+		        printf("Unrecognized message ID: %d\n", id);
 		    }
 		}
 		printf("%s disconnected.\n", client_ip);

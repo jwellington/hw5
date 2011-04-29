@@ -199,13 +199,13 @@ DIME_MESSAGE* receive_message(int sockfd)
 {
     char id_buffer[4];
 	ssize_t bytes_read = read(sockfd, (void *) &id_buffer, 4);
-	if (bytes_read == 0) //EOF
+	if (bytes_read <= 0) //EOF
 	{
 	    return NULL;
 	}
 	else if (bytes_read < 4)
 	{
-	    printf("Read %d bytes\n", bytes_read);
+	    printf("Read %d bytes\n", (int)bytes_read);
 		error("Error reading message ID");
     }
 	uint32_t id = ntohl(*((uint32_t *)id_buffer));

@@ -110,67 +110,60 @@ int main(int argc, char* argv[]) {
 	str_node_t* cur_target = targets;
 	
 	while (!done)
-	{
-		/*char id_buffer[4];
-		ssize_t bytes_read = read(sockfd, (void *) &id_buffer, 4);
-		if(bytes_read < 4)
-			error("Error reading message ID");
-		uint32_t id = ntohl(*((uint32_t *)id_buffer));
-			
-		char payload_buffer[4];
-		bytes_read = read(sockfd, (void *) &payload_buffer, 4);
-		if(bytes_read < 4)
-			error("Error reading message length");
-		uint32_t payload = ntohl(*((uint32_t *)payload_buffer));
-		
-		char message_buffer[payload];
-        bytes_read = read(sockfd, (void *) &message_buffer, payload);*/
-        
+	{        
         DIME_MESSAGE* message = receive_message(sockfd);
-        uint32_t id = message->id;
-        uint32_t payload = message->len;
-        char message_buffer[505];
-        strcpy(message_buffer, message->message);
-        message_free(message);
-        
-		//printf("Header is: %d --- %d\n", id,  payload);
-        if (id == 101) //Handshake response
+        if (message != NULL)
         {
-            char* target_str = cur_target->str;
-            printf("Issued request to execute %s\n", target_str);
-            send_message(sockfd, 102, target_str);
-            cur_target = cur_target->next;
-        }
-        else if (id == 103)
-        {
-            while (id != 104)
-            {
-                printf("%s\n", message_buffer);
-                message = receive_message(sockfd);
-                id = message->id;
-                strcpy(message_buffer, message->message);
-                message_free(message);
-            }
-            if (cur_target == NULL)
-            {
-                //printf("Done\n");
-                done = 1;
-            }
-            else
+            uint32_t id = message->id;
+            uint32_t payload = message->len;
+            char message_buffer[505];
+            strcpy(message_buffer, message->message);
+            message_free(message);
+            
+		    //printf("Header is: %d --- %d\n", id,  payload);
+            if (id == 101) //Handshake response
             {
                 char* target_str = cur_target->str;
-                printf("Issued request to execute %s\n", target_str);
+                printf("Issued request to execute: %s\n", target_str);
                 send_message(sockfd, 102, target_str);
                 cur_target = cur_target->next;
             }
-        }
-	    else if(id == 105)
-	    {
-		    error(message_buffer);
-	    }
-	    else
-	    {
-	        printf("Unrecognized message ID %d\n", id);
+            else if (id == 103)
+            {
+                while (id != 104)
+                {
+                    printf("%s\n", message_buffer);
+                    message = receive_message(sockfd);
+                    id = message->id;
+                    strcpy(message_buffer, message->message);
+                    message_free(message);
+                }
+            }
+	        else if(id == 105)
+	        {
+		        printf("%s\n", message_buffer);
+	        }
+	        
+            if (id == 104)
+            {
+                if (cur_target == NULL)
+                {
+                    //printf("Done\n");
+                    done = 1;
+                }
+                else
+                {
+                    char* target_str = cur_target->str;
+                    printf("Issued request to execute: %s\n", target_str);
+                    send_message(sockfd, 102, target_str);
+                    cur_target = cur_target->next;
+                }
+            }
+            
+	        if (id != 101 && id != 103 && id != 104 && id != 105)
+	        {
+	            printf("Unrecognized message ID :%d\n", id);
+	        }
 	    }
 	}
 	
