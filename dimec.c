@@ -16,22 +16,22 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 int main(int argc, char* argv[]) {
-
+    //Read command line rguments
     char* usage = "./dimec SERVER_ADDR PORT_NUM [TARGET1] [TARGET 2] ...";
-
     if (argc < 3)
     {
         printf("Usage:\n%s", usage);
         error("Not enough arguments");
     }
     char* server_addr = argv[1];
-    
     int port_num = atoi(argv[2]);
     
+    //Read in Dimefile targets to run
     str_node_t* targets = NULL;
-    if (argc > 3)
+    if (argc > 3) //Make a list of the desired targets
     {
         str_node_t* cur_target = (str_node_t*)malloc(sizeof(str_node_t));
         cur_target->next = NULL;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
             cur_target->next = NULL;
         }
     }
-    else
+    else //No target specified; default to the first one
     {
         targets = (str_node_t*)malloc(sizeof(str_node_t));
         targets->next = NULL;
@@ -60,8 +60,8 @@ int main(int argc, char* argv[]) {
         targets->str = tar_str;
     }
 	
+	//Set up socket
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	
 	if (sockfd < 0)
 	{
 	    error("Failed to set up socket");
@@ -74,24 +74,25 @@ int main(int argc, char* argv[]) {
 	    error("setsockopt");
 	}
 	
+	//Set up client address
 	struct sockaddr_in my_addr;
-	
 	my_addr.sin_family = AF_INET;
 	my_addr.sin_addr.s_addr = INADDR_ANY;
 	my_addr.sin_port = htons(4118);
 	
+	//Bind socket
 	int err = bind(sockfd, (const struct sockaddr *)&my_addr, sizeof(struct sockaddr_in));
-	
 	if (err < 0)
 	{
 	    error("Failed to bind socket");
 	}
 	
+	//Set up server address holder
 	struct sockaddr_in serv_addr;
-	
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port_num);
 	
+	//Look up ip address by host name
     struct hostent* hp = gethostbyname(server_addr);
     if (hp == 0)
     {
@@ -101,26 +102,31 @@ int main(int argc, char* argv[]) {
           (char*)&(serv_addr.sin_addr),
           hp->h_length);
 	
+	//Try to connect
 	err = connect(sockfd, (const struct sockaddr *)&serv_addr, sizeof(struct sockaddr_in));
 	char* serv_ip = inet_ntoa(serv_addr.sin_addr);
 	if (err < 0)
 	{
+	    printf("Error = %d\n", errno);
 	    error("Failed to connect");
 	}
 	else
     {
         printf("Connected to %s (%s) at port %d.\n", server_addr, serv_ip, port_num);
     }
+    
+    //Send handshake
 	size_t bytes_sent = send_message(sockfd, 100, "");
 	
 	int done = 0;
 	str_node_t* cur_target = targets;
-	
 	while (!done)
-	{        
+	{
+	    //Get next message from server
         DIME_MESSAGE* message = receive_message(sockfd);
         if (message != NULL)
         {
+            //Read message and free it when done
             uint32_t id = message->id;
             //uint32_t payload = message->len;
             char message_buffer[505];
@@ -135,9 +141,10 @@ int main(int argc, char* argv[]) {
                 send_message(sockfd, 102, target_str);
                 cur_target = cur_target->next;
             }
-            else if (id == 103)
+            else if (id == 103) //Response message from server
             {
-                while (id != 104)
+                while (id != 104) //Print response messages until end of response
+                                  //message received
                 {
                     printf("%s\n", message_buffer);
                     message = receive_message(sockfd);
@@ -146,16 +153,16 @@ int main(int argc, char* argv[]) {
                     message_free(message);
                 }
             }
-	        else if(id == 105)
+	        else if(id == 105) //Print error message
 	        {
 		        printf("%s\n", message_buffer);
 	        }
 	        
-            if (id == 104)
+            if (id == 104) //If end of response message received, check if we
+                           //have more targets to send; if not, we're done
             {
                 if (cur_target == NULL)
                 {
-                    //printf("Done\n");
                     done = 1;
                 }
                 else
@@ -167,7 +174,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             
-	        if (id != 101 && id != 103 && id != 104 && id != 105)
+	        if (id != 101 && id != 103 && id != 104 && id != 105) //Unknown ID
 	        {
 	            printf("Unrecognized message ID :%d\n", id);
 	        }

@@ -88,4 +88,11 @@ typedef struct dime_message {
 DIME_MESSAGE* receive_message(int);
 void message_free(DIME_MESSAGE*);
 
+typedef struct argholder{
+    struct sockaddr_in* client;
+    int sockfd;
+    rule_node_t* list;
+    int thread_number;
+} ARGHOLDER;
+
 #endif

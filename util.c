@@ -188,6 +188,7 @@ size_t send_message(int fd, int id, char* message)
     
     size_t bytes_written = 0;
     //printf("Sending (%d %d), (%d %d), (%s)\n", id, header, message_len, len, message);
+    
     bytes_written += write(fd, (void*)&header, sizeof(uint32_t));
     bytes_written += write(fd, (void*)&len, sizeof(uint32_t));
     bytes_written += write(fd, (void*)message, message_len);

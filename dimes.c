@@ -16,6 +16,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <signal.h>
+
+//Error variable used by handle_sigpipe to indicate if there was a broken pipe
+static int pipestat = 0;
+
 /*********
  * Simple usage instructions
  *********/
@@ -25,6 +30,12 @@ void dime_usage(char* progname) {
 	fprintf(stderr, "-h\t\tPrint this message and exit.\n");
 	fprintf(stderr, "-n\t\tDon't actually execute commands, just print them.\n");
 	exit(0);
+}
+
+void handle_sigpipe(int signum)
+{
+    //printf("Sigpipe received. %d\n", signum);
+    pipestat = 1;
 }
 
 /****************************** 
@@ -104,9 +115,17 @@ void exec_target_rec(rule_t* rule, rule_node_t* list, int sockfd) {
 void fake_exec(rule_t* rule, int sockfd) {
 	str_node_t* sptr;
 	for(sptr = rule->commandlines; sptr != NULL; sptr = sptr->next) {
+	    //Send response message
 		send_message(sockfd, 103, sptr->str);
 		//printf("%s\n", sptr->str);
-		usleep(500000);
+		if (pipestat == 0)
+		{
+		    usleep(500000);
+		}
+		else //Broken pipe, client disconnected, stop sending messages
+		{
+		    return;
+		}
 	}
 }
 
@@ -142,6 +161,99 @@ void execute_targets(int targetc, char* targetv[], rule_node_t* list, int sockfd
 	}
 }
 
+//Process run by helper thread that processes a connection and carries out the
+//conversation with the client
+void* process_client(void* argholder)
+{
+    //Read arguments
+    ARGHOLDER* args = (ARGHOLDER*)argholder;
+    int new_socket = args->sockfd;
+    //int thread_number = args->thread_number;
+    rule_node_t* list = args->list;
+    struct sockaddr_in* client = args->client;
+    int port_num = ntohs(client->sin_port);
+    char* client_ip = inet_ntoa(client->sin_addr);
+	printf("Incoming connection from %s at port %d\n", client_ip, port_num);
+	
+    while (1)
+    {
+        //Receive next message from client
+        DIME_MESSAGE* message = receive_message(new_socket);
+        if (message == NULL) //Client disconnected
+        {
+            break;
+        }
+        uint32_t id = message->id;
+        //uint32_t payload = message->len;
+        char message_buffer[strlen(message->message) + 1];
+        strcpy(message_buffer, message->message);
+        message_free(message);
+
+        //printf("Header is: %d --- %d\n", id,  payload);
+        if(id == 100) //Handshake received
+        {
+	        send_message(new_socket, 101, "");
+        }
+        else if(id == 102) //Request to execute a target
+        {
+	        printf("Received request to execute: %s from %s\n", message_buffer, client_ip);
+	        int num_targets;
+	        char** tar_list;
+            if (strlen(message_buffer) > 0)
+            {
+                tar_list[0] = message_buffer;
+                num_targets = 1;
+            }
+            else //No target specified, default to first
+            {
+                tar_list = NULL;
+                num_targets = 0;
+            }
+            
+            //Previously, if the client was interrupted or killed during its execution,
+            //trying to write messages to it would cause the server to receive a SIGPIPE
+            //and crash. To fix this possible security issue, we ignore SIGPIPE here.
+            struct sigaction newact, oldact;
+            newact.sa_handler = handle_sigpipe;
+            sigemptyset(&newact.sa_mask);
+            newact.sa_flags = 0;
+            sigaction(SIGPIPE, &newact, &oldact);
+            
+            execute_targets(num_targets, tar_list, list, new_socket);
+
+            sigaction(SIGPIPE, &oldact, NULL);
+                
+            if (pipestat == 1) //SIGPIPE occurred
+            {
+                message = receive_message(new_socket);
+                if (message == NULL) //Client of this thread disconnected
+                {
+                    pipestat = 0;
+                    break;
+                }
+            }
+            
+            //Send end of response message
+	        send_message(new_socket, 104, "");
+        }
+        else if(id == 105) //Print error message
+        {
+	        printf("%s\n", message_buffer);
+        }
+        else
+        {
+            printf("Unrecognized message ID: %d\n", id);
+        }
+    }
+    printf("%s disconnected.\n", client_ip);
+    //Cleanup
+    close(new_socket);
+    free(client);
+    free(argholder);
+    pthread_exit(NULL);
+    return NULL;
+}
+
 int main(int argc, char* argv[]) {
 	// Declarations for getopt
 	extern int optind;
@@ -150,7 +262,7 @@ int main(int argc, char* argv[]) {
 	//socklen_t clilen;
 	unsigned int clilen;
 	struct sockaddr_in server;
-	struct sockaddr_in client;
+	uint32_t thread_no = 1;
 	
 	// Variables you'll want to use
 	char* filename = "Dimefile";
@@ -178,6 +290,7 @@ int main(int argc, char* argv[]) {
 	    error("setsockopt");
 	}
 	
+	//Bind socket
 	if (bind(sock,(struct sockaddr *)&server,length)<0) 
 	    error("Failed to bind socket");
 	clilen = sizeof(struct sockaddr_in);
@@ -186,63 +299,36 @@ int main(int argc, char* argv[]) {
 	
 	while(1)
 	{
-		int new_socket = accept(sock, (struct sockaddr *) &client, &clilen);
-		int port_num = ntohs(client.sin_port);
-		char* client_ip = inet_ntoa(client.sin_addr);
-		printf("Incoming connection from %s at port %d\n", client_ip, port_num);
+	    //Accept connection and set up socket
+	    struct sockaddr_in* client = (struct sockaddr_in*)malloc(sizeof(struct sockaddr_in));
+		int new_socket = accept(sock, (struct sockaddr *)client, &clilen);
 		
-	    while (1)
-	    {        
-            DIME_MESSAGE* message = receive_message(new_socket);
-            if (message == NULL) //Client disconnected
-            {
-                break;
-            }
-            uint32_t id = message->id;
-            //uint32_t payload = message->len;
-            char message_buffer[strlen(message->message) + 1];
-            strcpy(message_buffer, message->message);
-            message_free(message);
+		//Create args for helper thread
+		ARGHOLDER* args = (ARGHOLDER*)malloc(sizeof(ARGHOLDER));
+		args->client = client;
+		args->sockfd = new_socket;
+		args->list = list;
+		args->thread_number = thread_no;
+		thread_no++;
+		pthread_t thread;
 		
-		    //printf("Header is: %d --- %d\n", id,  payload);
-		    if(id == 100) //Handshake received
-		    {
-			    //printf("100\n");
-			    //printf("Handshake received: %s\n", message_buffer);
-			    send_message(new_socket, 101, "");
-			    //Handshake Response
-		    }
-		    else if(id == 102)
-		    {
-			    printf("Received request to execute: %s from %s\n", message_buffer, client_ip);
-		        //FIXME: Actually execute targets here
-		        if (strlen(message_buffer) > 0)
-		        {
-		            char* tar_list[0];
-		            tar_list[0] = message_buffer;
-		            execute_targets(1, tar_list, list, new_socket);
-		        }
-		        else
-		        {
-		            execute_targets(0, NULL, list, new_socket);
-		        }
-			    send_message(new_socket, 104, "");
-			    //Execute Target
-		    }
-		    else if(id == 105)
-		    {
-			    printf("%s\n", message_buffer);
-		    }
-		    else
-		    {
-		        printf("Unrecognized message ID: %d\n", id);
-		    }
-		}
-		printf("%s disconnected.\n", client_ip);
-		close(new_socket);
+		//Attempt to create helper thread to process connection
+		if (pthread_create(&thread, NULL, process_client, (void*)args) != 0)
+	    {
+	        //Failed to connect, free the thread's resources
+		    int port_num = ntohs(client->sin_port);
+		    char* client_ip = inet_ntoa(client->sin_addr);
+		    printf("Failed to accept connection from %s at port %d\n", client_ip, port_num);
+	        free(args);
+	        free(client);
+	    }
+	    else
+	    {
+	        //Detach thread
+	        pthread_detach(thread);
+	    }
 	}
-	
-	//execute_targets(argc, argv, list);
+	//Cleanup
 	rule_node_free(list);
 	return 0;
 }

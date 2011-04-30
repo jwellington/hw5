@@ -1,0 +1,11 @@
+David Pitchford
+3594118
+pitch006
+
+Jacob Wellington
+3664486
+welli037
+
+Dime Part 4
+
+The purpose of this assignment was to implement dime over a network. The program now consists of two parts, the client and the server. The server is run with input specifying the port number it will listen on. It then listens for incoming connections to process. The client program is run with input specifying the address and port number to connect to, along with any targets in the Dimefile assumed to be accessible by the server. When the server receives a client connection, it creates and detaches a new thread to process this connection so it can immediately return to listening for connections. The helper thread engages in a brief conversation with the client, receiving requests to execute targets and outputting the results to the client. Once the client disconnects, the thread terminates.

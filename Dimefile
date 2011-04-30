@@ -1,6 +1,31 @@
 # this is the Dimefile to give an example of what you should be able
 # this is the example from the writeup
 
+default: {
+   yo
+   dawg
+   I
+   heard
+   you
+   like
+   networked
+   dime
+   so
+   I
+   got
+   you
+   a
+   multi-threaded
+   server
+   so
+   you
+   can
+   dime
+   while
+   you
+   dime
+}
+
 target1: rulea ruleb rulec {
    t1 line1
 }
