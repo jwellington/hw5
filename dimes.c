@@ -170,6 +170,14 @@ int main(int argc, char* argv[]) {
 	server.sin_family=AF_INET;
 	server.sin_addr.s_addr=INADDR_ANY;
 	server.sin_port=htons(atoi(argv[1]));
+	
+	//Free up socket in case it's in use
+	int yes = 1;
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) < 0)
+	{
+	    error("setsockopt");
+	}
+	
 	if (bind(sock,(struct sockaddr *)&server,length)<0) 
 	    error("Failed to bind socket");
 	clilen = sizeof(struct sockaddr_in);
@@ -191,7 +199,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             uint32_t id = message->id;
-            uint32_t payload = message->len;
+            //uint32_t payload = message->len;
             char message_buffer[strlen(message->message) + 1];
             strcpy(message_buffer, message->message);
             message_free(message);

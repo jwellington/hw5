@@ -67,6 +67,13 @@ int main(int argc, char* argv[]) {
 	    error("Failed to set up socket");
 	}
 	
+	//Free up socket in case it's in use
+	int yes = 1;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) < 0)
+	{
+	    error("setsockopt");
+	}
+	
 	struct sockaddr_in my_addr;
 	
 	my_addr.sin_family = AF_INET;
@@ -115,7 +122,7 @@ int main(int argc, char* argv[]) {
         if (message != NULL)
         {
             uint32_t id = message->id;
-            uint32_t payload = message->len;
+            //uint32_t payload = message->len;
             char message_buffer[505];
             strcpy(message_buffer, message->message);
             message_free(message);
