@@ -116,6 +116,7 @@ void fake_exec(rule_t* rule, int sockfd) {
 	str_node_t* sptr;
 	for(sptr = rule->commandlines; sptr != NULL; sptr = sptr->next) {
 	    //Send response message
+	    pipestat = 0;
 		send_message(sockfd, 103, sptr->str);
 		//printf("%s\n", sptr->str);
 		if (pipestat == 0)
@@ -124,6 +125,7 @@ void fake_exec(rule_t* rule, int sockfd) {
 		}
 		else //Broken pipe, client disconnected, stop sending messages
 		{
+		    pipestat = 0;
 		    return;
 		}
 	}
@@ -210,28 +212,7 @@ void* process_client(void* argholder)
                 num_targets = 0;
             }
             
-            //Previously, if the client was interrupted or killed during its execution,
-            //trying to write messages to it would cause the server to receive a SIGPIPE
-            //and crash. To fix this possible security issue, we ignore SIGPIPE here.
-            struct sigaction newact, oldact;
-            newact.sa_handler = handle_sigpipe;
-            sigemptyset(&newact.sa_mask);
-            newact.sa_flags = 0;
-            sigaction(SIGPIPE, &newact, &oldact);
-            
             execute_targets(num_targets, tar_list, list, new_socket);
-
-            sigaction(SIGPIPE, &oldact, NULL);
-                
-            if (pipestat == 1) //SIGPIPE occurred
-            {
-                message = receive_message(new_socket);
-                if (message == NULL) //Client of this thread disconnected
-                {
-                    pipestat = 0;
-                    break;
-                }
-            }
             
             //Send end of response message
 	        send_message(new_socket, 104, "");
@@ -296,6 +277,15 @@ int main(int argc, char* argv[]) {
 	clilen = sizeof(struct sockaddr_in);
 	
 	listen(sock, 100);
+            
+    //Previously, if the client was interrupted or killed during its execution,
+    //trying to write messages to it would cause the server to receive a SIGPIPE
+    //and crash. To fix this possible security issue, we ignore SIGPIPE here.
+    struct sigaction newact, oldact;
+    newact.sa_handler = handle_sigpipe;
+    sigemptyset(&newact.sa_mask);
+    newact.sa_flags = 0;
+    sigaction(SIGPIPE, &newact, &oldact);
 	
 	while(1)
 	{
@@ -329,6 +319,7 @@ int main(int argc, char* argv[]) {
 	    }
 	}
 	//Cleanup
+	sigaction(SIGPIPE, &oldact, NULL);
 	rule_node_free(list);
 	return 0;
 }
